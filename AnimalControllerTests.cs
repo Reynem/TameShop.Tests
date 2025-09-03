@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TameShop.Controllers;
 using TameShop.Data;
 using TameShop.Models;
@@ -45,9 +45,49 @@ namespace TameShop.Tests
         {
             var response = await _animalController.GetAnimal(1);
             Assert.IsNotNull(response);
-            Console.WriteLine(response);
         }
 
+        [TestMethod]
+        public async Task AnimalAddPig()
+        {
+            var pig = new Animal
+            {
+                Id = 2,
+                Name = "Pig",
+                Category = "Farm",
+                Description = "A cute pig",
+                ImageUrl = "https://example.com/pig.jpg",
+                Price = 39.99M,
+            };
+            await _context.Animals.AddAsync(pig);
+            await _context.SaveChangesAsync();
+            var response = await _animalController.GetAnimal(2);
+            Assert.IsNotNull(response);
+        }
+
+        [TestMethod]
+        public async Task AnimalDeletePig()
+        {
+            var pig = new Animal
+            {
+                Id = 2,
+                Name = "Pig",
+                Category = "Farm",
+                Description = "A cute pig",
+                ImageUrl = "https://example.com/pig.jpg",
+                Price = 39.99M,
+            };
+            await _context.Animals.AddAsync(pig);
+            await _context.SaveChangesAsync();
+            var animal = await _context.Animals.FirstOrDefaultAsync(a => a.Id == 2);
+            if (animal != null)
+            {
+                await _animalController.DeleteAnimal(animal.Id);
+            }
+            var response = await _animalController.GetAnimal(2);
+            
+            Assert.IsInstanceOfType(response, typeof(NotFoundObjectResult));
+        }
     }
 }
             
