@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using TameShop.Controllers;
 using TameShop.Data;
 using TameShop.Models;
+using TameShop.ViewModels;
 
 namespace TameShop.Tests
 {
@@ -187,8 +188,8 @@ namespace TameShop.Tests
             var result = await _animalController.GetAnimalsPaged(1, 2) as OkObjectResult;
 
             Assert.IsNotNull(result);
-            dynamic data = result.Value!;
-            Assert.AreEqual(3, data.TotalCount);
+            var data = result.Value! as PagedResultDTO<Animal>;
+            Assert.AreEqual(3, data!.TotalCount);
             Assert.AreEqual(1, data.Page);
             Assert.AreEqual(2, data.PageSize);
             Assert.AreEqual(2, ((List<Animal>)data.Data).Count);
